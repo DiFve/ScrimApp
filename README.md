@@ -3,6 +3,9 @@
 - [ ] สร้าง Folder ตั้งชื่ออะไรก้ได้อันนึงแล้วเปิด cmd ที่ Folder
 
 - [ ] ลง module ให้เรียบร้อย 
+    - ``` pip install django ```
+    - ``` pip install pymongo dnspython ```
+    - ``` pip install djangorestframework ```
 
 - [ ] พิมพ์  ``` git clone https://github.com/DiFve/YIMPS ``` เพื่อลงไฟล์ Project ไว้ใน Folder
 
