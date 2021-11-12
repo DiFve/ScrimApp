@@ -90,4 +90,24 @@ def reqToScrim(request,pk):
         res.update({'message':message})
         return JsonResponse(res)
     
-
+def getPostById(request,pk):
+    res={}
+    message=''
+    statusCode = 200
+    try:
+        if request.method == 'GET':
+            reqPost = db.Test.Post.find_one(
+                {'_id':ObjectId(pk)},
+                )
+            if reqPost == None:
+                raise Exception('No post of that Id found')
+            reqPost['_id']=str(reqPost['_id'])
+            print(reqPost)
+    except Exception as err:
+        statusCode = 500
+        message = 'something went wrong finding the post : ' + err.args[0]
+    res.update({'statusCode' : statusCode,
+                'message' : message,
+                'reqPost' : reqPost
+                })
+    return JsonResponse(res)
