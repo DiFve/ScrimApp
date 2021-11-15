@@ -2,9 +2,11 @@ from time import time
 from django.http import JsonResponse,QueryDict
 from django.http.response import HttpResponse
 from django.http.request import HttpRequest
+import requests
 from utils import get_db_handle
 from django.views.decorators.csrf import csrf_exempt
 from bson.objectid import ObjectId
+from .algorithm import postAlgo
 import json
 
 db=get_db_handle()
@@ -110,4 +112,30 @@ def getPostById(request,pk):
                 'message' : message,
                 'reqPost' : reqPost
                 })
+    return JsonResponse(res)
+
+def getPostSort(request):
+    
+    res={}
+    message=''
+    statusCode = 200
+    allpost={}
+    sortedLis=[]
+    try:
+        if request.method == 'GET':
+            body = dict(QueryDict(request.body))
+            allpost=db.Test.Post.find()
+            allpostLis=[]
+            for data in allpost:
+                _id=str(data['_id'])
+                data['postData'].update({'id':_id})
+                allpostLis.append(data['postData'])
+            sortedLis=postAlgo.sortPostBy(body['method'][0],{'allPosts':allpostLis})
+            message='successfully finding'
+    except Exception as err:
+            statusCode = 440
+            message='something went wrong finding: ' + err.args[0]
+    res.update({'statusCode':statusCode})
+    res.update({'message':message})
+    res.update({'allPosts': sortedLis})
     return JsonResponse(res)
