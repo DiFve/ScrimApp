@@ -8,4 +8,5 @@ urlpatterns = [
     path('createpost',postRoute.createPost,name = 'createPost'),
     path('request-to-scrim/<str:pk>',postRoute.reqToScrim,name='reqToScrim'),
     path('getpost/<str:pk>',postRoute.getPostById,name='getPostById'),
+    path('getposts-sorted',postRoute.getPostSort,name='getPostSort'),
 ]
