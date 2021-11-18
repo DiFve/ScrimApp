@@ -24,14 +24,14 @@ rank={
               'Immortal3' : 20,
               'Radiant' : 21,
              }
-def mergeSortForDic(myList):
+def mergeSortRank(myList):
     if len(myList) > 1:
         mid = len(myList) // 2
         left = myList[:mid]
         right = myList[mid:]
 
-        mergeSortForDic(left)
-        mergeSortForDic(right)
+        mergeSortRank(left)
+        mergeSortRank(right)
 
         i = 0
         j = 0
@@ -57,11 +57,90 @@ def mergeSortForDic(myList):
             j += 1
             k += 1
 
+def mergeSortDate(myList):
+    if len(myList) > 1:
+        mid = len(myList) // 2
+        left = myList[:mid]
+        right = myList[mid:]
+
+        mergeSortDate(left)
+        mergeSortDate(right)
+
+        i = 0
+        j = 0
+        
+        k = 0
+        
+        while i < len(left) and j < len(right):
+            dayL=left[i]['date'].split('/')[0]
+            monthL=left[i]['date'].split('/')[1]
+            yearL=left[i]['date'].split('/')[2]
+            dayR = right[j]['date'].split('/')[0]
+            monthR = right[j]['date'].split('/')[1]
+            yearR = right[j]['date'].split('/')[2]
+            #if rank[left[i]['date']] <= rank[right[j]['date']]:
+            if yearL<yearR:
+              myList[k] = left[i]
+              i += 1
+            elif yearL == yearR:
+                if monthL < monthR:
+                    myList[k]=left[i]
+                    i+=1
+                elif monthR < monthL:
+                    myList[k]=right[j]
+                    j+=1
+                else:
+                    if dayL<dayR:
+                        myList[k]=left[i]
+                        i+=1
+                    elif dayL > dayR:
+                        myList[k]=right[j]
+                        j+=1
+                    else:
+                        hrL = left[i]['time'].split(':')[0]
+                        hrR = right[i]['time'].split(':')[0]
+                        minL = left[i]['time'].split(':')[1]
+                        minR = right[i]['time'].split(':')[1]
+                        if hrL < hrR :
+                            myList[k]=left[i]
+                            i+=1
+                        elif hrR < hrL:
+                            myList[k]=right[j]
+                            j+=1
+                        else:
+                            if minL<=minR:
+                                myList[k]=left[i]
+                                i+=1
+                            else:
+                                myList[k]=right[j]
+                                j+=1
+            else:
+                myList[k] = right[j]
+                j += 1
+            k += 1
+
+        while i < len(left):
+            myList[k] = left[i]
+            i += 1
+            k += 1
+
+        while j < len(right):
+            myList[k]=right[j]
+            j += 1
+            k += 1
+
 def sortPostBy(method,postArr):
+    print(method)
     if method == 'rank':
         testdic = postArr
         data=testdic['allPosts']
         print(data)
-        mergeSortForDic(data)
+        mergeSortRank(data)
         print(data) 
+        return data
+    elif method == 'date':
+        testdic = postArr
+        data=testdic['allPosts']
+        mergeSortDate(data)
+        print(data)
         return data
