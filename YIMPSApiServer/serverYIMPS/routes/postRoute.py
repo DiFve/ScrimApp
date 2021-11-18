@@ -2,9 +2,11 @@ from time import time
 from django.http import JsonResponse,QueryDict
 from django.http.response import HttpResponse
 from django.http.request import HttpRequest
+import requests
 from utils import get_db_handle
 from django.views.decorators.csrf import csrf_exempt
 from bson.objectid import ObjectId
+from .algorithm import postAlgo
 import json
 
 db=get_db_handle()
@@ -90,4 +92,50 @@ def reqToScrim(request,pk):
         res.update({'message':message})
         return JsonResponse(res)
     
+def getPostById(request,pk):
+    res={}
+    message=''
+    statusCode = 200
+    try:
+        if request.method == 'GET':
+            reqPost = db.Test.Post.find_one(
+                {'_id':ObjectId(pk)},
+                )
+            if reqPost == None:
+                raise Exception('No post of that Id found')
+            reqPost['_id']=str(reqPost['_id'])
+            print(reqPost)
+    except Exception as err:
+        statusCode = 500
+        message = 'something went wrong finding the post : ' + err.args[0]
+    res.update({'statusCode' : statusCode,
+                'message' : message,
+                'reqPost' : reqPost
+                })
+    return JsonResponse(res)
 
+def getPostSort(request):
+    
+    res={}
+    message=''
+    statusCode = 200
+    allpost={}
+    sortedLis=[]
+    try:
+        if request.method == 'GET':
+            body = dict(QueryDict(request.body))
+            allpost=db.Test.Post.find()
+            allpostLis=[]
+            for data in allpost:
+                _id=str(data['_id'])
+                data['postData'].update({'id':_id})
+                allpostLis.append(data['postData'])
+            sortedLis=postAlgo.sortPostBy(body['method'][0],{'allPosts':allpostLis})
+            message='successfully finding'
+    except Exception as err:
+            statusCode = 440
+            message='something went wrong finding: ' + err.args[0]
+    res.update({'statusCode':statusCode})
+    res.update({'message':message})
+    res.update({'allPosts': sortedLis})
+    return JsonResponse(res)
