@@ -11,5 +11,7 @@ urlpatterns = [
     path('createUser',profileRoute.creteProfile,name='creteProfile'),
     path('getpost/<str:pk>',postRoute.getPostById,name='getPostById'),
     path('getposts-sorted',postRoute.getPostSort,name='getPostSort'),
+    path('login',profileRoute.login,name='login'),
+    path('editProfile',profileRoute.editProfile,name='editProfile'),
 ]
 
