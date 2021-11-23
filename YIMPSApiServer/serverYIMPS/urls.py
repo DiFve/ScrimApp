@@ -12,4 +12,5 @@ urlpatterns = [
     path('createteam',teamRoute.createTeam,name='createTeam'),
     path('getteam/<str:pk>',teamRoute.getTeam,name='getTeam'),
     path('addmember/<str:pk>',teamRoute.addMember,name='addMember'),
+    path('getposts-sorted',postRoute.getPostSort,name='getPostSort'),
 ]
