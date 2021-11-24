@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from bson.objectid import ObjectId
 from .algorithm import postAlgo
 import json
+import requests
 
 db=get_db_handle()
 
@@ -25,11 +26,17 @@ def createPost(request):
                 'date': body['date'][0],
                 'teamRank': body['teamRank'][0],
                 'teamRating' : float(body['teamRating'][0]),
+                'createdby': body['createdby'][0],
                 'details' : 'It\'s a one two three test',
+
             }
+            resformBack = requests.get('http://34.124.169.53:8000/api/getteam/{0}'.format(post['createdby']))
+            teamMember=resformBack.json()['reqTeam']['teamMember']
+            print(teamMember)
             result=db.Test.Post.insert_one(
                 {'postData': post,
                 'req':[],
+                'paticipants': teamMember,
                 },
             )
             print('lol')
@@ -70,24 +77,26 @@ def reqToScrim(request,pk):
         res={}
         message=''
         statusCode = 200
- 
-        body=dict(QueryDict(request.body))
-        if request.method == "PUT":
-            print(body)
-            print(pk)
-            reqPost = db.Test.Post.find(
-            {'_id': ObjectId(pk)},
-            )
-            reqToSent = {
-                'teamId': body['teamId'][0],
-            }
-            db.Test.Post.update_one(
-                {'_id':ObjectId(pk)},
-                {
-                    '$push':{'req': reqToSent}
+        try:
+            body=dict(QueryDict(request.body))
+            if request.method == "PUT":
+                print(body)
+                print(pk)
+                reqPost = db.Test.Post.find(
+                {'_id': ObjectId(pk)},
+                )
+                reqToSent = {
+                    'teamId': body['teamId'][0],
                 }
-            )
-            message='successfully add your request'
+                db.Test.Post.update_one(
+                    {'_id':ObjectId(pk)},
+                    {
+                        '$push':{'req': reqToSent}
+                    }
+                )
+                message='successfully add your request'
+        except Exception as err:
+            message='something went wrong while adding your request : ' + err.args[0]
         res.update({'statusCode':statusCode})
         res.update({'message':message})
         return JsonResponse(res)
