@@ -23,7 +23,6 @@ def createTeam(request):
                 'teamRating': body['teamRating'][0],
                 'teamLead' : body['teamLead'][0],
                 'teamPost' : [],
-                'teamMember' : [],
                 'bio' : 'show experiance of your team skill WOOOOOHOOOOO',
             }
             result=db.Test.Team.insert_one(
@@ -77,9 +76,21 @@ def addMember(request,pk):
             member = {
                 'userid':body['userid'][0],
                 }
+            team=db.Test.Team.find_one(
+                {'_id':ObjectId(pk)},
+            )
+            nowMember=[]
+            for member in team['teamMember']:
+                nowMember.append(member.get('userid'))
+            if body['userid'][0] in nowMember:
+                raise Exception('user already in the team')
             db.Test.Team.update_one(
                 {'_id':ObjectId(pk)},
                 {'$push':{'teamMember':member}}
+            )
+            db.Test.User.update_one(
+                {'_id':ObjectId(body['userid'][0])},
+                {'$set':{'user.team':pk}}
             )
             message='succesfully add your member'
         except Exception as err:
