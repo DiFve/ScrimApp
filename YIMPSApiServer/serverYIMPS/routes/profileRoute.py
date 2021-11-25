@@ -1,6 +1,7 @@
 from django.http import JsonResponse,QueryDict
 from django.http.response import HttpResponse
 from django.http.request import HttpRequest
+from dns.rdatatype import NINFO
 from utils import get_db_handle
 from django.views.decorators.csrf import csrf_exempt
 from bson.objectid import ObjectId
@@ -18,8 +19,32 @@ def creteProfile(request):
         try:
             body=dict(request.POST)
             salt = bcrypt.gensalt()
+
+            if body['username'][0] == '':
+                raise Exception('Please fill your username')
+            
+            if body['password'][0] == '':
+                raise Exception('Please fill your password')
+
+            if body['confirmPassword'][0] == '':
+                raise Exception('Please confirm your password')
+
+            if body['confirmPassword'][0] != body['password'][0]:
+                raise Exception('Password and Confirm password doesn\'t match')
             username = body['username'][0]
             password = str(body['password'][0]).encode("utf-8")
+
+
+            isUsernameExist = db.Test.User.find_one(
+                {'user.username':username}
+            )
+
+            print(isUsernameExist)
+            if isUsernameExist != None:
+                raise Exception('This username is already exist')
+
+            
+
             hashed = bcrypt.hashpw(password,salt)
 
             user = {
@@ -40,7 +65,7 @@ def creteProfile(request):
 
         except Exception as err:
             statusCode = 440
-            message='something went wrong saving: ' + err.args[0]
+            message='something went wrong : ' + err.args[0]
     else:
         statusCode = 440
         message = 'wrong method try again'
@@ -103,9 +128,9 @@ def editProfile(request):
                 {'_id':ObjectId(_id)},
                 { '$set':
                     {
-                    'bio' : str(body['bio'][0]),
-                    'rank' : str(body['rank'][0]),
-                    'team' : str(body['team'][0])
+                    'user.bio' : str(body['bio'][0]),
+                    'user.rank' : str(body['rank'][0]),
+                    'user.team' : str(body['team'][0])
                     }
                 }
             )
@@ -121,6 +146,41 @@ def editProfile(request):
 
             
             
+def getUserInfo(request,pk):
+    res={}
+    message=''
+    statusCode = 200
+    reqUserInfo = {}
+    if request.method == 'GET':
+        try:
+            userInfoObj = db.Test.User.find_one(
+                {'_id':ObjectId(pk)},
+            )
 
+
+            if userInfoObj == None:
+                raise Exception('Can\'t find this member')
+
+            # for data in userInfoObj['user']:
+            #     print(data)
+
+            
+
+            reqUserInfo['_id'] = str(userInfoObj['_id'])
+            reqUserInfo['username'] = str(userInfoObj['user']['username'])
+            reqUserInfo['bio'] = str(userInfoObj['user']['bio'])
+            reqUserInfo['rank'] = str(userInfoObj['user']['rank'])
+            reqUserInfo['team'] = str(userInfoObj['user']['team'])
+            
+        except Exception as err:
+            statusCode = 440
+            message='something went wrong finding user: ' + err.args[0]
+        
+        res.update({ 'statusCode' : statusCode,
+                     'message' : message,
+                      'userInfo' : reqUserInfo
+        })
+
+        return JsonResponse(res)
 
 
