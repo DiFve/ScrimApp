@@ -72,6 +72,7 @@ def login(request):
     res={}
     message=''
     statusCode = 200
+    req = ''
     try:
         if request.method == 'GET':
             body = dict(QueryDict(request.body))
@@ -87,11 +88,11 @@ def login(request):
             if matched:
                 message = 'Login'
                 req = str(usernameObj['_id'])
-                print("Login!!")
+                # print("Login!!")
             else:
                 message = 'Wrong Password'
                 req = None
-                print("Wrong Password")
+                # print("Wrong Password")
     except Exception as err:
             statusCode = 440
             message='something went wrong finding: ' + err.args[0]
