@@ -24,15 +24,13 @@ def createPost(request):
             post = {
                 'time': body['time'][0],
                 'date': body['date'][0],
-                'teamRank': body['teamRank'][0],
-                'teamRating' : float(body['teamRating'][0]),
+                'teamRank': 'NoRank',
                 'createdby': body['createdby'][0],
-                'details' : 'It\'s a one two three test',
-
             }
             resformBack = requests.get('http://34.124.169.53:8000/api/getteam/{0}'.format(post['createdby']))
             teamMember=resformBack.json()['reqTeam']['teamMember']
             print(teamMember)
+            post['teamRank']=postAlgo.findAvgRank(teamMember)
             result=db.Test.Post.insert_one(
                 {'postData': post,
                 'req':[],
@@ -100,7 +98,35 @@ def reqToScrim(request,pk):
         res.update({'statusCode':statusCode})
         res.update({'message':message})
         return JsonResponse(res)
-    
+
+@csrf_exempt
+def acceptReq(request,pk):
+    res={}
+    message=''
+    statusCode = 200
+    try:
+        if request.method == "PUT":
+            postId=pk
+            body=dict(QueryDict(request.body))
+            print(body)
+            teamId = body['teamId'][0]
+            team=db.Test.Team.find_one(
+                {'_id':ObjectId(teamId)}
+            )
+            print(team)
+            for member in team['teamMember']:
+                db.Test.Post.update(
+                    {'_id' : ObjectId(postId)},
+                    {
+                        '$push':{'paticipants':{'userId':member['userid']}}
+                    }
+                )
+            message = 'successfully accept your request'
+    except Exception as err:
+        message='something went wrong while accepting your request : ' + err.args[0]
+    res.update({'statusCode':statusCode})
+    res.update({'message':message})
+    return JsonResponse(res)
 def getPostById(request,pk):
     res={}
     message=''
@@ -124,7 +150,6 @@ def getPostById(request,pk):
     return JsonResponse(res)
 
 def getPostSort(request):
-    
     res={}
     message=''
     statusCode = 200
@@ -148,3 +173,9 @@ def getPostSort(request):
     res.update({'message':message})
     res.update({'allPosts': sortedLis})
     return JsonResponse(res)
+
+def getAvgRank(request,pk):
+    resformBack = requests.get('http://34.124.169.53:8000/api/getteam/{0}'.format(pk))
+    teamMember=resformBack.json()['reqTeam']['teamMember']
+    rank=postAlgo.findAvgRank(teamMember)
+    return JsonResponse({'rank':rank})

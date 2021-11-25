@@ -1,5 +1,6 @@
 import requests
 from requests.api import post
+import math
 rank={
               'Iron1': 0,
               'Iron2': 1,
@@ -78,7 +79,6 @@ def mergeSortDate(myList):
             dayR = right[j]['date'].split('/')[0]
             monthR = right[j]['date'].split('/')[1]
             yearR = right[j]['date'].split('/')[2]
-            #if rank[left[i]['date']] <= rank[right[j]['date']]:
             if yearL<yearR:
               myList[k] = left[i]
               i += 1
@@ -141,6 +141,23 @@ def sortPostBy(method,postArr):
     elif method == 'date':
         testdic = postArr
         data=testdic['allPosts']
+        print(data)
         mergeSortDate(data)
         print(data)
         return data
+    
+def findAvgRank(members):
+    print(members)
+    try:
+        allrank=0
+        for user in members:
+            res=requests.get('http://34.124.169.53:8000/api/getUserInfo/{0}'.format(user['userid']))
+            userrank=res.json()['userInfo']['rank']
+            allrank+=rank[userrank]
+        avgRankInt=math.floor(allrank/len(members))
+
+        for i in rank.keys():
+            if rank[i] == avgRankInt:
+                return i
+    except Exception as err:
+        print('some err in avg:' + err.args[0])
