@@ -26,11 +26,6 @@ def creteProfile(request):
             if body['password'][0] == '':
                 raise Exception('Please fill your password')
 
-            if body['confirmPassword'][0] == '':
-                raise Exception('Please confirm your password')
-
-            if body['confirmPassword'][0] != body['password'][0]:
-                raise Exception('Password and Confirm password doesn\'t match')
             username = body['username'][0]
             password = str(body['password'][0]).encode("utf-8")
 
@@ -77,6 +72,7 @@ def login(request):
     res={}
     message=''
     statusCode = 200
+    req = ''
     try:
         if request.method == 'GET':
             body = dict(QueryDict(request.body))
@@ -92,11 +88,11 @@ def login(request):
             if matched:
                 message = 'Login'
                 req = str(usernameObj['_id'])
-                print("Login!!")
+                # print("Login!!")
             else:
                 message = 'Wrong Password'
                 req = None
-                print("Wrong Password")
+                # print("Wrong Password")
     except Exception as err:
             statusCode = 440
             message='something went wrong finding: ' + err.args[0]
