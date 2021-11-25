@@ -88,11 +88,9 @@ def login(request):
             if matched:
                 message = 'Login'
                 req = str(usernameObj['_id'])
-                # print("Login!!")
             else:
                 message = 'Wrong Password'
                 req = None
-                # print("Wrong Password")
     except Exception as err:
             statusCode = 440
             message='something went wrong finding: ' + err.args[0]
@@ -108,8 +106,6 @@ def editProfile(request):
     message=''
     statusCode = 200
 
-    
-
     if request.method == "PUT":
         try :
             body=dict(QueryDict(request.body))
@@ -120,13 +116,15 @@ def editProfile(request):
                 {'_id':ObjectId(_id)}
             )
             
+            if usernameObj == None:
+                raise Exception('Can\'t find this user')
+
             db.Test.User.update_one(
                 {'_id':ObjectId(_id)},
                 { '$set':
                     {
                     'user.bio' : str(body['bio'][0]),
                     'user.rank' : str(body['rank'][0]),
-                    'user.team' : str(body['team'][0])
                     }
                 }
             )
