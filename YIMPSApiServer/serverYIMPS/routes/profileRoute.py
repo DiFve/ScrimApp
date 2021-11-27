@@ -53,7 +53,7 @@ def creteProfile(request):
             db.Test.User.insert_one(
                 {
                     'user': user,
-                    'req':[],
+                    'match':[]
                 }
             )
             message = 'successfully'
@@ -87,6 +87,7 @@ def login(request):
             matched = bcrypt.checkpw(password, pwHashed)
             if matched:
                 message = 'Login'
+                teamID = str(usernameObj['team'])
                 req = str(usernameObj['_id'])
             else:
                 message = 'Wrong Password'
@@ -96,6 +97,7 @@ def login(request):
             message='something went wrong finding: ' + err.args[0]
     res.update({'statusCode' : statusCode,
                 'message' : message,
+                'teamID' : teamID,
                 'currentUserID' : req
                 })
     return JsonResponse(res)
@@ -140,7 +142,7 @@ def editProfile(request):
 
             
             
-def getUserInfo(request,pk):
+def getUserInfoByID(request,pk):
     res={}
     message=''
     statusCode = 200
@@ -150,15 +152,8 @@ def getUserInfo(request,pk):
             userInfoObj = db.Test.User.find_one(
                 {'_id':ObjectId(pk)},
             )
-
-
             if userInfoObj == None:
                 raise Exception('Can\'t find this member')
-
-            # for data in userInfoObj['user']:
-            #     print(data)
-
-            
 
             reqUserInfo['_id'] = str(userInfoObj['_id'])
             reqUserInfo['username'] = str(userInfoObj['user']['username'])
@@ -177,4 +172,34 @@ def getUserInfo(request,pk):
 
         return JsonResponse(res)
 
+
+def getUserInfoByName(request,pk):
+    res={}
+    message=''
+    statusCode = 200
+    reqUserInfo = {}
+    if request.method == 'GET':
+        try:
+            userInfoObj = db.Test.User.find_one(
+                {'user.username':pk},
+            )
+            if userInfoObj == None:
+                raise Exception('Can\'t find this member')
+
+            reqUserInfo['_id'] = str(userInfoObj['_id'])
+            reqUserInfo['username'] = str(userInfoObj['user']['username'])
+            reqUserInfo['bio'] = str(userInfoObj['user']['bio'])
+            reqUserInfo['rank'] = str(userInfoObj['user']['rank'])
+            reqUserInfo['team'] = str(userInfoObj['user']['team'])
+            
+        except Exception as err:
+            statusCode = 440
+            message='something went wrong finding user: ' + err.args[0]
+        
+        res.update({ 'statusCode' : statusCode,
+                     'message' : message,
+                      'userInfo' : reqUserInfo
+        })
+
+        return JsonResponse(res)
 
