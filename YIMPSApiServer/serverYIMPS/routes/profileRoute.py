@@ -73,6 +73,7 @@ def login(request):
     message=''
     statusCode = 200
     req = ''
+    teamID = ''
     try:
         if request.method == 'GET':
             body = dict(QueryDict(request.body))
@@ -87,7 +88,7 @@ def login(request):
             matched = bcrypt.checkpw(password, pwHashed)
             if matched:
                 message = 'Login'
-                teamID = str(usernameObj['team'])
+                teamID = str(usernameObj['user']['team'])
                 req = str(usernameObj['_id'])
             else:
                 message = 'Wrong Password'
