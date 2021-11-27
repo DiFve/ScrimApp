@@ -12,7 +12,8 @@ urlpatterns = [
     path('getpost/<str:pk>',postRoute.getPostById,name='getPostById'),
     path('test-averagerank/<str:pk>',postRoute.getAvgRank,name='getAvgRank'),
     path('post/<str:pk>/accept-request',postRoute.acceptReq,name='acceptReq'),
-
+    path('get-team-post/<str:pk>',postRoute.getAllTeamPost,name='getAllTeamPost'),
+    
     #teamRoute
     path('createteam',teamRoute.createTeam,name='createTeam'),
     path('getteam/<str:pk>',teamRoute.getTeam,name='getTeam'),
