@@ -18,10 +18,9 @@ def createTeam(request):
         try:
             body=dict(request.POST)
             team = {
-                'teamName': body['teamName'][0],
-                'teamRank': body['teamRank'][0],
-                'teamRating': body['teamRating'][0],
-                'teamLead' : body['teamLead'][0],
+                'teamName': body['teamName'][0], #name input
+                'teamRank': body['teamRank'][0], #rank of user who created the post
+                'teamLead' : body['teamLead'][0], #id of user who created the post
                 'teamPost' : [],
                 'bio' : 'show experiance of your team skill WOOOOOHOOOOO',
             }
