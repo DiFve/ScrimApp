@@ -24,7 +24,8 @@ urlpatterns = [
     path('createUser',profileRoute.creteProfile,name='creteProfile'),
     path('login',profileRoute.login,name='login'),
     path('editProfile',profileRoute.editProfile,name='editProfile'),
-    path('getUserInfo/<str:pk>',profileRoute.getUserInfo,name='getUserInfo')
+    path('getUserInfoByID/<str:pk>',profileRoute.getUserInfoByID,name='getUserInfoByID'),
+    path('getUserInfoByName/<str:pk>',profileRoute.getUserInfoByName,name='getUserInfoByName')
 
 ]
 
