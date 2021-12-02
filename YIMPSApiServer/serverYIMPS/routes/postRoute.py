@@ -31,6 +31,8 @@ def createPost(request):
             teamMember=resformBack.json()['reqTeam']['teamMember']
             print(teamMember)
             post['teamRank']=postAlgo.findAvgRank(teamMember)
+            if post['teamRank']== None:
+                post['teamRank']='No Informations'
             result=db.Test.Post.insert_one(
                 {'postData': post,
                 'req':[],
