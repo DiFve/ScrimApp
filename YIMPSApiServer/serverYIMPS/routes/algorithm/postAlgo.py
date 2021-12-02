@@ -151,7 +151,7 @@ def findAvgRank(members):
     try:
         allrank=0
         for user in members:
-            res=requests.get('http://34.124.169.53:8000/api/getUserInfo/{0}'.format(user['userid']))
+            res=requests.get('http://34.124.169.53:8000/api/getUserInfoByID/{0}'.format(user['userid']))
             userrank=res.json()['userInfo']['rank']
             allrank+=rank[userrank]
         avgRankInt=math.floor(allrank/len(members))
