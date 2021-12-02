@@ -88,7 +88,7 @@ def addMember(request,pk):
                 nowMember.append(member.get('userid'))
             if body['userid'][0] in nowMember:
                 raise Exception('user already in the team')
-            db.Test.Team.update_one(
+            result=db.Test.Team.update_one(
                 {'_id':ObjectId(pk)},
                 {'$push':{'teamMember':member}}
             )
