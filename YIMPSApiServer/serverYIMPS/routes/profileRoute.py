@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from bson.objectid import ObjectId
 import json
 import bcrypt
-
+import gridfs
 db=get_db_handle()
 
 @csrf_exempt
@@ -103,6 +103,8 @@ def login(request):
                 })
     return JsonResponse(res)
 
+
+
 @csrf_exempt
 def editProfile(request):
     res={}
@@ -112,15 +114,17 @@ def editProfile(request):
     if request.method == "PUT":
         try :
             body=dict(QueryDict(request.body))
-
             _id = str(body['_id'][0])
-
             usernameObj = db.Test.User.find_one(
                 {'_id':ObjectId(_id)}
-            )
-            
+            )   
             if usernameObj == None:
                 raise Exception('Can\'t find this user')
+            # imageLocation = 'D:/Datastructure_project/ScrimApp/YIMPSApiServer/serverYIMPS/routes/monika.jpg'
+            # imageData = open(imageLocation,"rb")
+            # data = imageData.read()
+            # fs = gridfs.GridFS(db.grid_file)
+            # fs.put(data, filename = _id)
 
             db.Test.User.update_one(
                 {'_id':ObjectId(_id)},
@@ -134,14 +138,68 @@ def editProfile(request):
             message = 'Profile update success'
         except Exception as err:
             statusCode = 440
-            message='something went wrong : ' + err.args[0]
+            message='something went wrong : ' + str(err.args[0])
     
     res.update({'statusCode' : statusCode,
                 'message' : message,
                 })
     return JsonResponse(res)
 
+def setProfileImage(request):
+    res={}
+    message=''
+    statusCode = 200
+    if request.method == "PUT":
+        try :
+            body=dict(QueryDict(request.body))
+            _id = str(body['_id'][0])
+            usernameObj = db.Test.User.find_one(
+                {'_id':ObjectId(_id)}
+            )   
+            if usernameObj == None:
+                raise Exception('Can\'t find this user')
+            data = body['pictureProfile'][0]
+            fs = gridfs.GridFS(db.grid_file)
+            fs.put(data, filename = _id)
             
+            message = 'Picture profile update success'
+        except Exception as err:
+            statusCode = 440
+            message='something went wrong : ' + str(err.args[0])
+    
+    res.update({'statusCode' : statusCode,
+                'message' : message,
+                })
+    return JsonResponse(res)   
+
+
+def getProfileImage(request,pk):
+    res={}
+    message=''
+    image = ''
+    statusCode = 200    
+    if request.method == 'GET':
+        try:
+
+            data = db.grid_file.fs.files.find_one(
+                {'filename':pk}
+            )
+
+            my_id = data['_id']
+            image =  gridfs.GridFS(db.grid_file).get(my_id).read()
+
+            
+            
+        except Exception as err:
+            statusCode = 440
+            message='something went wrong finding user: ' + err.args[0]
+        
+        res.update({ 'statusCode' : statusCode,
+                     'message' : message,
+                     'image' : str(image)
+        })  
+
+        return JsonResponse(res)
             
 def getUserInfoByID(request,pk):
     res={}

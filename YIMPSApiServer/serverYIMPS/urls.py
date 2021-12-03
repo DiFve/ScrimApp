@@ -25,7 +25,8 @@ urlpatterns = [
     path('login',profileRoute.login,name='login'),
     path('editProfile',profileRoute.editProfile,name='editProfile'),
     path('getUserInfoByID/<str:pk>',profileRoute.getUserInfoByID,name='getUserInfoByID'),
-    path('getUserInfoByName/<str:pk>',profileRoute.getUserInfoByName,name='getUserInfoByName')
+    path('getUserInfoByName/<str:pk>',profileRoute.getUserInfoByName,name='getUserInfoByName'),
+    path('getProfileImage/<str:pk>',profileRoute.getProfileImage,name='getProfileImage')
 
 ]
 
