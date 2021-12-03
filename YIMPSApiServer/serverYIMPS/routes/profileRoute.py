@@ -143,7 +143,7 @@ def editProfile(request):
                 'message' : message,
                 })
     return JsonResponse(res)
-
+@csrf_exempt
 def setProfileImage(request):
     res={}
     message=''
@@ -160,7 +160,7 @@ def setProfileImage(request):
             data = body['pictureProfile'][0]
             fs = gridfs.GridFS(db.grid_file)
             fs.put(data, filename = _id)
-            
+
             message = 'Picture profile update success'
         except Exception as err:
             statusCode = 440
