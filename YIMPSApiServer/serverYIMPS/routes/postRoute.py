@@ -89,11 +89,11 @@ def reqToScrim(request,pk):
         try:
             body=dict(QueryDict(request.body))
             if request.method == "PUT":
-                print(body)
-                print(pk)
                 reqPost = db.Test.Post.find(
                 {'_id': ObjectId(pk)},
                 )
+                if body['teamId'][0] == reqPost[0]['postData']['createdby']:
+                    raise Exception('Cannot request to your own post')
                 reqToSent = {
                     'teamId': body['teamId'][0],
                 }
