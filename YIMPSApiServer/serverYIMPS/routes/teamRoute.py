@@ -18,10 +18,9 @@ def createTeam(request):
         try:
             body=dict(request.POST)
             team = {
-                'teamName': body['teamName'][0],
-                'teamRank': body['teamRank'][0],
-                'teamRating': body['teamRating'][0],
-                'teamLead' : body['teamLead'][0],
+                'teamName': body['teamName'][0], #name input
+                'teamRank': body['teamRank'][0], #rank of user who created the post
+                'teamLead' : body['teamLead'][0], #id of user who created the post
                 'teamPost' : [],
                 'bio' : 'show experiance of your team skill WOOOOOHOOOOO',
             }
@@ -84,11 +83,12 @@ def addMember(request,pk):
                 {'_id':ObjectId(pk)},
             )
             nowMember=[]
-            for member in team['teamMember']:
-                nowMember.append(member.get('userid'))
+            for memberi in team['teamMember']:
+                nowMember.append(memberi.get('userid'))
             if body['userid'][0] in nowMember:
                 raise Exception('user already in the team')
-            db.Test.Team.update_one(
+            
+            result=db.Test.Team.update_one(
                 {'_id':ObjectId(pk)},
                 {'$push':{'teamMember':member}}
             )
