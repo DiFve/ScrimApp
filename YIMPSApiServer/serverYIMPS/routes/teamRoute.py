@@ -17,6 +17,8 @@ def createTeam(request):
     if request.method == 'POST':
         try:
             body=dict(request.POST)
+            if body['teamName'][0] == '':
+                raise Exception('teamName cannot be blank')
             check = db.Test.Team.find_one(
                 {'teamData.teamName' : body['teamName'][0]}
             )
