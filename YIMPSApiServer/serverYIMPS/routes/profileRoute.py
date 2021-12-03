@@ -25,7 +25,6 @@ def creteProfile(request):
             
             if body['password'][0] == '':
                 raise Exception('Please fill your password')
-
             username = body['username'][0]
             password = str(body['password'][0]).encode("utf-8")
 
