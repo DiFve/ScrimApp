@@ -19,13 +19,13 @@ urlpatterns = [
     path('getteam/<str:pk>',teamRoute.getTeam,name='getTeam'),
     path('addmember/<str:pk>',teamRoute.addMember,name='addMember'),
     
-
     #profileRoute
     path('createUser',profileRoute.creteProfile,name='creteProfile'),
     path('login',profileRoute.login,name='login'),
     path('editProfile',profileRoute.editProfile,name='editProfile'),
     path('getUserInfoByID/<str:pk>',profileRoute.getUserInfoByID,name='getUserInfoByID'),
-    path('getUserInfoByName/<str:pk>',profileRoute.getUserInfoByName,name='getUserInfoByName')
-
+    path('getUserInfoByName/<str:pk>',profileRoute.getUserInfoByName,name='getUserInfoByName'),
+    path('getProfileImage/<str:pk>',profileRoute.getProfileImage,name='getProfileImage'),
+    path('setProfileImage',profileRoute.setProfileImage,name='setProfileImage')
 ]
 
