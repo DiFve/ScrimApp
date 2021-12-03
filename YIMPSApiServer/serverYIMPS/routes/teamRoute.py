@@ -17,9 +17,10 @@ def createTeam(request):
     if request.method == 'POST':
         try:
             body=dict(request.POST)
-            check = db.Test.Team.find(
-                {'teamName' : body['teamName'][0]}
+            check = db.Test.Team.find_one(
+                {'teamData.teamName' : body['teamName'][0]}
             )
+            print(check)
             if check != None:
                 raise Exception('teamName already exists')
             team = {
