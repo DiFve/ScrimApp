@@ -2,10 +2,12 @@ from time import time
 from django.http import JsonResponse,QueryDict
 from django.http.response import HttpResponse
 from django.http.request import HttpRequest
+import requests
 from utils import get_db_handle
 from django.views.decorators.csrf import csrf_exempt
 from bson.objectid import ObjectId
 import json
+from .algorithm import postAlgo
 
 db=get_db_handle()
 
@@ -72,6 +74,18 @@ def getTeam(request,pk):
             if reqTeam == None:
                 raise Exception('No post of that Id found')
 
+            updateRank=db.Test.Team.update(
+                {'_id':ObjectId(pk)},
+                {
+                    '$set':
+                    {
+                        'teamData.teamRank':postAlgo.findAvgRank(reqTeam['teamMember'])
+                    }
+                }
+            )
+            reqTeam = db.Test.Team.find_one(
+                {'_id':ObjectId(pk)},
+            )
             reqTeam['_id']=str(reqTeam['_id'])
         except Exception as err:
             statusCode = 440
@@ -135,9 +149,9 @@ def removeMember(request,pk):
     message=''
     statusCode = 200
 
-    body=dict(QueryDict(request.body))
     if request.method == 'PUT':
         try:
+            body=dict(QueryDict(request.body))
             member = {
                 'userid':body['userid'][0],
                 }
@@ -192,7 +206,6 @@ def editTeam(request,pk):
         'message':message,
         })
     return JsonResponse(res)
-    
 
             
 

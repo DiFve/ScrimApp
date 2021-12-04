@@ -41,11 +41,6 @@ def createPost(request):
                 'paticipants': teamMember,
                 },
             )
-            for member in teamMember:
-                db.Test.User.update_one(
-                    {'_id':ObjectId(member['userid'])},
-                    {'$push':{'match':str(result.inserted_id)}}
-                )
             db.Test.Team.update_one(
                 {'_id':ObjectId(post['createdby'])},
                 {'$push':{'teamData.teamPost':str(result.inserted_id)}}
@@ -127,7 +122,7 @@ def acceptReq(request,pk):
                 {'_id':ObjectId(teamId)}
             )
             print(team)
-            db.Test.Post.update(
+            post=db.Test.Post.update(
                 {'_id':ObjectId(postId)},
                 {
                     '$set':
@@ -146,6 +141,14 @@ def acceptReq(request,pk):
                 )
                 db.Test.User.update_one(
                     {'_id' : ObjectId(member['userid'])},
+                    {'$push':{'match':postId}}
+                )
+            postTeam = db.Test.Team.find(
+                {'_id':ObjectId(post['postData']['createdby'])}
+            )
+            for member in postTeam['teamMember']:
+                db.Test.User.update_one(
+                    {'_id':ObjectId(member['userid'])},
                     {'$push':{'match':postId}}
                 )
             message = 'successfully accept your request'
