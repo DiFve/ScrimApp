@@ -66,6 +66,23 @@ def getAllPost(request):
             allpost=db.Test.Post.find()
             allpostLis=[]
             for data in allpost:
+                print(data)
+                team = db.Test.Team.find(
+                    {'_id': ObjectId(data['postData']['createdby'])}
+                )
+                if team == None:
+                    raise Exception('This team is not exist')
+                db.Test.Post.update(
+                    {'_id': data['_id']},
+                    {
+                        '$set':
+                        {
+                            'postData.teamRank' : postAlgo.findAvgRank(team[0]['teamMember'])
+                        }
+                    }
+                )
+            allpost=db.Test.Post.find()
+            for data in allpost:
                 _id=str(data['_id'])
                 data['postData'].update({'id':_id})
                 allpostLis.append(data['postData'])
