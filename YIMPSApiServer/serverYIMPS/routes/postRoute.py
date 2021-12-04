@@ -26,6 +26,7 @@ def createPost(request):
                 'date': body['date'][0],
                 'teamRank': 'NoRank',
                 'createdby': body['createdby'][0],
+                'opponent': '',
             }
             resformBack = requests.get('http://34.124.169.53:8000/api/getteam/{0}'.format(post['createdby']))
             teamMember=resformBack.json()['reqTeam']['teamMember']
@@ -125,6 +126,16 @@ def acceptReq(request,pk):
                 {'_id':ObjectId(teamId)}
             )
             print(team)
+            db.Test.Post.update(
+                {'_id':ObjectId(postId)},
+                {
+                    '$set':
+                    {
+                        'postData.opponent':teamId,
+                        'req':[]
+                    }
+                }
+            )
             for member in team['teamMember']:
                 db.Test.Post.update(
                     {'_id' : ObjectId(postId)},
@@ -142,6 +153,35 @@ def acceptReq(request,pk):
     res.update({'statusCode':statusCode})
     res.update({'message':message})
     return JsonResponse(res)
+
+@csrf_exempt
+def rejectReq(request,pk):
+    res={}
+    message='OK'
+    statusCode = 200
+    try:
+        if request.method == "PUT":
+            postId=pk
+            body=dict(QueryDict(request.body))
+            teamId = body['teamId'][0]
+            post = db.Test.Post.find(
+                {'_id':ObjectId(postId)},
+                {
+                    '$pull':
+                    {
+                        'req':{
+                            'teamId' : teamId
+                        }
+                    }
+                }
+            )
+    except Exception as err:
+         message='something went wrong while rejecting your request : ' + err.args[0]
+    res.update({'statusCode':statusCode})
+    res.update({'message':message})
+    return JsonResponse(res)
+
+
 
 def getPostById(request,pk):
     res={}

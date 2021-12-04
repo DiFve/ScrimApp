@@ -13,13 +13,14 @@ urlpatterns = [
     path('test-averagerank/<str:pk>',postRoute.getAvgRank,name='getAvgRank'),
     path('post/<str:pk>/accept-request',postRoute.acceptReq,name='acceptReq'),
     path('get-team-post/<str:pk>',postRoute.getAllTeamPost,name='getAllTeamPost'),
+    path('post/<str:pk>/reject-request',postRoute.rejectReq,name='rejectReq'),
     
     #teamRoute
     path('createteam',teamRoute.createTeam,name='createTeam'),
     path('getteam/<str:pk>',teamRoute.getTeam,name='getTeam'),
     path('addmember/<str:pk>',teamRoute.addMember,name='addMember'),
     path('removemember/<str:pk>',teamRoute.removeMember,name='removeMember'),
-
+    path('editteam/<str:pk>',teamRoute.editTeam,name='editTeam'),
     #profileRoute
     path('createUser',profileRoute.creteProfile,name='creteProfile'),
     path('login',profileRoute.login,name='login'),
