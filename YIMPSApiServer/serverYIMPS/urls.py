@@ -24,6 +24,7 @@ urlpatterns = [
     path('addmember/<str:pk>',teamRoute.addMember,name='addMember'),
     path('removemember/<str:pk>',teamRoute.removeMember,name='removeMember'),
     path('editteam/<str:pk>',teamRoute.editTeam,name='editTeam'),
+    
     #profileRoute
     path('createUser',profileRoute.creteProfile,name='creteProfile'),
     path('login',profileRoute.login,name='login'),
