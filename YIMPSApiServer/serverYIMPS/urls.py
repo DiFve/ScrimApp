@@ -1,10 +1,13 @@
 from django.urls import path
 from . import views
-from .routes import postRoute,teamRoute,profileRoute
+from .routes import homeRoute,postRoute,teamRoute,profileRoute
 
 urlpatterns = [
     path('', views.index , name ='index'),
+
+    path('getNextFiveMatch/<str:pk>',homeRoute.getNextFiveMatch,name='getNextFiveMatch'),
     #postRoute
+    
     path('getallposts',postRoute.getAllPost,name='getPost'),
     path('createpost',postRoute.createPost,name = 'createPost'),
     path('request-to-scrim/<str:pk>',postRoute.reqToScrim,name='reqToScrim'),
