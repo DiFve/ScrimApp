@@ -37,6 +37,15 @@ def createPost(request):
                 'paticipants': teamMember,
                 },
             )
+            for member in teamMember:
+                db.Test.User.update_one(
+                    {'_id':ObjectId(member['userid'])},
+                    {'$push':{'match':str(result.inserted_id)}}
+                )
+            db.Test.Team.update_one(
+                {'_id':ObjectId(post['createdby'])},
+                {'$push':{'teamData.teamPost':str(result.inserted_id)}}
+            )
             print('lol')
             message='successfully save'
         except Exception as err:
@@ -121,12 +130,17 @@ def acceptReq(request,pk):
                         '$push':{'paticipants':{'userId':member['userid']}}
                     }
                 )
+                db.Test.User.update_one(
+                    {'_id' : ObjectId(member['userid'])},
+                    {'$push':{'match':postId}}
+                )
             message = 'successfully accept your request'
     except Exception as err:
         message='something went wrong while accepting your request : ' + err.args[0]
     res.update({'statusCode':statusCode})
     res.update({'message':message})
     return JsonResponse(res)
+
 def getPostById(request,pk):
     res={}
     message=''
@@ -179,3 +193,30 @@ def getAvgRank(request,pk):
     teamMember=resformBack.json()['reqTeam']['teamMember']
     rank=postAlgo.findAvgRank(teamMember)
     return JsonResponse({'rank':rank})
+
+def getAllTeamPost(request,pk):
+    res={}
+    message=''
+    statusCode = 200
+    allpostLis=[]
+    print('hello')
+    try:
+        if request.method == 'GET':
+            team=db.Test.Team.find_one(
+                {'_id':ObjectId(pk)}
+            )
+            
+            allPostId=dict(team)['teamData']['teamPost']
+            print(allPostId)
+            allpostLis=[]
+            for postId in allPostId:
+                post=requests.get('http://34.124.169.53:8000/api/getpost/{0}'.format(postId))
+                allpostLis.append(post.json()['reqPost'])
+            message='successfully finding'
+    except Exception as err:
+            statusCode = 440
+            message='something went wrong finding: ' + err.args[0]
+    res.update({'statusCode':statusCode})
+    res.update({'message':message})
+    res.update({'allTeamPosts': allpostLis})
+    return JsonResponse(res)

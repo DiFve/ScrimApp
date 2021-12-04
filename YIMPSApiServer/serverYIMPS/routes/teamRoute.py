@@ -29,6 +29,10 @@ def createTeam(request):
                 {'teamData': team,
                 },
             )
+            db.Test.User.update_one(
+                {'_id':ObjectId(body['teamLead'][0])},
+                {'$set':{'user.team':str(result.inserted_id)}}
+            )
             message='successfully save'
         except Exception as err:
             statusCode = 440
