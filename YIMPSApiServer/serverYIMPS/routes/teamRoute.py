@@ -41,6 +41,7 @@ def createTeam(request):
             result=db.Test.Team.insert_one(
                 {'teamData': team,
                  'teamMember':[{'userid':body['teamLead'][0]}],
+                 'teamMatch':[],
                 },
             )
             print(result)
@@ -140,6 +141,11 @@ def removeMember(request,pk):
             member = {
                 'userid':body['userid'][0],
                 }
+            user = db.Test.User.update_one(
+                {'_id':ObjectId(body['userid'][0])},
+                {'$set':{'user.team':'','match':[]}}
+            )
+
             db.Test.Team.update_one(
                 {'_id':ObjectId(pk)},
                 {'$pull':{'teamMember':member}}
