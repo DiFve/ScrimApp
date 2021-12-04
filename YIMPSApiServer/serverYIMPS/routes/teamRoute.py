@@ -17,18 +17,33 @@ def createTeam(request):
     if request.method == 'POST':
         try:
             body=dict(request.POST)
+            if body['teamName'][0] == '':
+                raise Exception('teamName cannot be blank')
+            check = db.Test.Team.find_one(
+                {'teamData.teamName' : body['teamName'][0]}
+            )
+            checkifhaveteam = db.Test.User.find(
+                {'_id':ObjectId(body['teamLead'][0])}
+            )
+            if checkifhaveteam == None:
+                raise Exception('user invalid')
+            if checkifhaveteam[0]['user']['team'] != '':
+                raise Exception('User alreay have a team')
+            if check != None:
+                raise Exception('teamName already exists')
             team = {
-                'teamName': body['teamName'][0],
-                'teamRank': body['teamRank'][0],
-                'teamRating': body['teamRating'][0],
-                'teamLead' : body['teamLead'][0],
+                'teamName': body['teamName'][0], #name input
+                'teamRank': body['teamRank'][0], #rank of user who created the post
+                'teamLead' : body['teamLead'][0], #id of user who created the post
                 'teamPost' : [],
                 'bio' : 'show experiance of your team skill WOOOOOHOOOOO',
             }
             result=db.Test.Team.insert_one(
                 {'teamData': team,
+                 'teamMember':[{'userid':body['teamLead'][0]}],
                 },
             )
+            print(result)
             db.Test.User.update_one(
                 {'_id':ObjectId(body['teamLead'][0])},
                 {'$set':{'user.team':str(result.inserted_id)}}
@@ -46,7 +61,7 @@ def createTeam(request):
                
 def getTeam(request,pk):
     res={}
-    message=''
+    message='OK'
     statusCode = 200
     if request.method == 'GET':
         try:
@@ -84,11 +99,16 @@ def addMember(request,pk):
                 {'_id':ObjectId(pk)},
             )
             nowMember=[]
-            for member in team['teamMember']:
-                nowMember.append(member.get('userid'))
+            for memberi in team['teamMember']:
+                nowMember.append(memberi.get('userid'))
             if body['userid'][0] in nowMember:
                 raise Exception('user already in the team')
-            db.Test.Team.update_one(
+            checkifhaveteam = db.Test.User.find(
+                {'_id':ObjectId(body['userid'][0])}
+            )
+            if checkifhaveteam[0]['user']['team'] != '':
+                raise Exception('User alreay have a team')
+            result=db.Test.Team.update_one(
                 {'_id':ObjectId(pk)},
                 {'$push':{'teamMember':member}}
             )

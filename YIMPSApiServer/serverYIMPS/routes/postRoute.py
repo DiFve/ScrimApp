@@ -31,6 +31,8 @@ def createPost(request):
             teamMember=resformBack.json()['reqTeam']['teamMember']
             print(teamMember)
             post['teamRank']=postAlgo.findAvgRank(teamMember)
+            if post['teamRank']== None:
+                post['teamRank']='No Informations'
             result=db.Test.Post.insert_one(
                 {'postData': post,
                 'req':[],
@@ -87,11 +89,11 @@ def reqToScrim(request,pk):
         try:
             body=dict(QueryDict(request.body))
             if request.method == "PUT":
-                print(body)
-                print(pk)
                 reqPost = db.Test.Post.find(
                 {'_id': ObjectId(pk)},
                 )
+                if body['teamId'][0] == reqPost[0]['postData']['createdby']:
+                    raise Exception('Cannot request to your own post')
                 reqToSent = {
                     'teamId': body['teamId'][0],
                 }
