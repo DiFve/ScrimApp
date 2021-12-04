@@ -160,8 +160,39 @@ def removeMember(request,pk):
         })
     return JsonResponse(res)
 
-    
+@csrf_exempt
+def editTeam(request,pk):
+    res={}
+    message = ''
+    statusCode = 200
 
+    if request.method == 'PUT':
+        try:
+            body = dict(QueryDict(request.body))
+            check = db.Test.Team.find(
+                {'_id':ObjectId(pk)}
+            )
+            if check == None:
+                raise Exception('team not exist')
+            team = db.Test.Team.update(
+                {'_id':ObjectId(pk)},
+                {'$set':
+                    {
+                        'teamData.teamName':body['teamName'][0],
+                        'teamData.bio':body['bio'][0]
+                    }
+                }
+            )
+        except Exception as err:
+            statusCode = 440
+            message='something went wrong saving: ' + err.args[0]
+    message = 'OK'
+    res.update({
+        'statusCode':statusCode,
+        'message':message,
+        })
+    return JsonResponse(res)
+    
 
             
 
