@@ -106,6 +106,8 @@ def addMember(request,pk):
             checkifhaveteam = db.Test.User.find(
                 {'_id':ObjectId(body['userid'][0])}
             )
+            if checkifhaveteam == None:
+                raise Exception('User not exist')
             if checkifhaveteam[0]['user']['team'] != '':
                 raise Exception('User alreay have a team')
             result=db.Test.Team.update_one(
