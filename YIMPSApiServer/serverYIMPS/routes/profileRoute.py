@@ -2,12 +2,15 @@ from django.http import JsonResponse,QueryDict
 from django.http.response import HttpResponse
 from django.http.request import HttpRequest
 from dns.rdatatype import NINFO
+from pymongo.read_preferences import _invalid_max_staleness_msg
 from utils import get_db_handle
 from django.views.decorators.csrf import csrf_exempt
 from bson.objectid import ObjectId
 import json
 import bcrypt
 import gridfs
+import base64
+import json
 db=get_db_handle()
 
 @csrf_exempt
@@ -119,11 +122,6 @@ def editProfile(request):
             )   
             if usernameObj == None:
                 raise Exception('Can\'t find this user')
-            # imageLocation = 'D:/Datastructure_project/ScrimApp/YIMPSApiServer/serverYIMPS/routes/monika.jpg'
-            # imageData = open(imageLocation,"rb")
-            # data = imageData.read()
-            # fs = gridfs.GridFS(db.grid_file)
-            # fs.put(data, filename = _id)
 
             db.Test.User.update_one(
                 {'_id':ObjectId(_id)},
@@ -157,10 +155,19 @@ def setProfileImage(request):
             )   
             if usernameObj == None:
                 raise Exception('Can\'t find this user')
-            data = body['pictureProfile'][0]
+            
+            data = body['pictureProfile'][0].encode('utf-8')
+            # data = base64.decodebytes(data)
+            
+            
             fs = gridfs.GridFS(db.grid_file)
+            isExist = db.grid_file.fs.files.find_one(
+                {'filename': _id}
+            )
+            print(isExist)
+            if isExist != None:
+                fs.delete(isExist['_id'])
             fs.put(data, filename = _id)
-
             message = 'Picture profile update success'
         except Exception as err:
             statusCode = 440
@@ -186,16 +193,26 @@ def getProfileImage(request,pk):
 
             my_id = data['_id']
             image =  gridfs.GridFS(db.grid_file).get(my_id).read()
+            image = base64.decodebytes(image)
+            image = str(base64.b64encode(image))
+            image = image[2:-1]
 
+            # image = image.encode('utf-8')
+            # image = base64.decodebytes(image)
             
+            
+            # download = 'D:/Datastructure_project/ScrimApp/YIMPSApiServer/serverYIMPS/routes/monnnnnika.png'
+            # output = open(download, 'wb')
+            # output.write(image)
+            # output.close()
             
         except Exception as err:
             statusCode = 440
             message='something went wrong finding user: ' + err.args[0]
         
         res.update({ 'statusCode' : statusCode,
-                     'message' : message,
-                     'image' : str(image)
+                    'message' : message,
+                    'image' : image
         })  
 
         return JsonResponse(res)
