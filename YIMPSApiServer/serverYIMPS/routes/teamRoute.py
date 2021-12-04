@@ -22,7 +22,13 @@ def createTeam(request):
             check = db.Test.Team.find_one(
                 {'teamData.teamName' : body['teamName'][0]}
             )
-            print(check)
+            checkifhaveteam = db.Test.User.find(
+                {'_id':ObjectId(body['teamLead'][0])}
+            )
+            if checkifhaveteam == None:
+                raise Exception('user invalid')
+            if checkifhaveteam[0]['user']['team'] != '':
+                raise Exception('User alreay have a team')
             if check != None:
                 raise Exception('teamName already exists')
             team = {
@@ -34,8 +40,11 @@ def createTeam(request):
             }
             result=db.Test.Team.insert_one(
                 {'teamData': team,
+                 'teamMember':[{'userid':body['teamLead'][0]}],
+                 'teamMatch':[],
                 },
             )
+            print(result)
             db.Test.User.update_one(
                 {'_id':ObjectId(body['teamLead'][0])},
                 {'$set':{'user.team':str(result.inserted_id)}}
@@ -53,7 +62,7 @@ def createTeam(request):
                
 def getTeam(request,pk):
     res={}
-    message=''
+    message='OK'
     statusCode = 200
     if request.method == 'GET':
         try:
@@ -95,7 +104,13 @@ def addMember(request,pk):
                 nowMember.append(memberi.get('userid'))
             if body['userid'][0] in nowMember:
                 raise Exception('user already in the team')
-            
+            checkifhaveteam = db.Test.User.find(
+                {'_id':ObjectId(body['userid'][0])}
+            )
+            if checkifhaveteam == None:
+                raise Exception('User not exist')
+            if checkifhaveteam[0]['user']['team'] != '':
+                raise Exception('User alreay have a team')
             result=db.Test.Team.update_one(
                 {'_id':ObjectId(pk)},
                 {'$push':{'teamMember':member}}
@@ -126,6 +141,11 @@ def removeMember(request,pk):
             member = {
                 'userid':body['userid'][0],
                 }
+            user = db.Test.User.update_one(
+                {'_id':ObjectId(body['userid'][0])},
+                {'$set':{'user.team':'','match':[]}}
+            )
+
             db.Test.Team.update_one(
                 {'_id':ObjectId(pk)},
                 {'$pull':{'teamMember':member}}

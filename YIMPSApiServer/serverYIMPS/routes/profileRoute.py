@@ -128,7 +128,9 @@ def editProfile(request):
             _id = str(body['_id'][0])
             usernameObj = db.Test.User.find_one(
                 {'_id':ObjectId(_id)}
-            )   
+            )
+            
+            
             if usernameObj == None:
                 raise Exception('Can\'t find this user')
             
