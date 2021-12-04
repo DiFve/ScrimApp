@@ -18,7 +18,8 @@ urlpatterns = [
     path('createteam',teamRoute.createTeam,name='createTeam'),
     path('getteam/<str:pk>',teamRoute.getTeam,name='getTeam'),
     path('addmember/<str:pk>',teamRoute.addMember,name='addMember'),
-    
+    path('removemember/<str:pk>',teamRoute.removeMember,name='removeMember'),
+
     #profileRoute
     path('createUser',profileRoute.creteProfile,name='creteProfile'),
     path('login',profileRoute.login,name='login'),
