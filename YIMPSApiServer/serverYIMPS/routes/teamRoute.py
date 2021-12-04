@@ -73,7 +73,6 @@ def getTeam(request,pk):
             )
             if reqTeam == None:
                 raise Exception('No post of that Id found')
-
             updateRank=db.Test.Team.update(
                 {'_id':ObjectId(pk)},
                 {
