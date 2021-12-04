@@ -22,10 +22,11 @@ def createTeam(request):
             check = db.Test.Team.find_one(
                 {'teamData.teamName' : body['teamName'][0]}
             )
-            print(check)
             checkifhaveteam = db.Test.User.find(
                 {'_id':ObjectId(body['teamLead'][0])}
             )
+            if checkifhaveteam == None:
+                raise Exception('user invalid')
             if checkifhaveteam[0]['user']['team'] != '':
                 raise Exception('User alreay have a team')
             if check != None:
@@ -39,8 +40,10 @@ def createTeam(request):
             }
             result=db.Test.Team.insert_one(
                 {'teamData': team,
+                 'teamMember':[{'userid':body['teamLead'][0]}],
                 },
             )
+            print(result)
             db.Test.User.update_one(
                 {'_id':ObjectId(body['teamLead'][0])},
                 {'$set':{'user.team':str(result.inserted_id)}}
