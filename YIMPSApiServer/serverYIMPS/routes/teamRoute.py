@@ -17,6 +17,14 @@ def createTeam(request):
     if request.method == 'POST':
         try:
             body=dict(request.POST)
+            if body['teamName'][0] == '':
+                raise Exception('teamName cannot be blank')
+            check = db.Test.Team.find_one(
+                {'teamData.teamName' : body['teamName'][0]}
+            )
+            print(check)
+            if check != None:
+                raise Exception('teamName already exists')
             team = {
                 'teamName': body['teamName'][0], #name input
                 'teamRank': body['teamRank'][0], #rank of user who created the post
