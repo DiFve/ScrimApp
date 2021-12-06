@@ -10,7 +10,6 @@ import json
 import bcrypt
 import gridfs
 import base64
-import json
 db=get_db_handle()
 
 @csrf_exempt
@@ -152,6 +151,7 @@ def editProfile(request):
                 'message' : message,
                 })
     return JsonResponse(res)
+
 @csrf_exempt
 def setProfileImage(request):
     res={}
