@@ -148,6 +148,7 @@ def acceptReq(request,pk):
             team=db.Test.Team.find_one(
                 {'_id':ObjectId(teamId)}
             )
+            
             print(team)
             post=db.Test.Post.find_one(
                 {'_id':ObjectId(pk)}
@@ -182,6 +183,7 @@ def acceptReq(request,pk):
                     {'_id':ObjectId(member['userid'])},
                     {'$push':{'match':postId}}
                 )
+            
             message = 'successfully accept your request'
     except Exception as err:
         message='something went wrong while accepting your request : ' + str(err.args[0])
@@ -272,7 +274,7 @@ def getAvgRank(request,pk):
     rank=postAlgo.findAvgRank(teamMember)
     return JsonResponse({'rank':rank})
 
-def getAllTeamPost(request,pk):
+def getAllUserPost(request,pk):
     res={}
     message=''
     statusCode = 200
@@ -280,11 +282,11 @@ def getAllTeamPost(request,pk):
     print('hello')
     try:
         if request.method == 'GET':
-            team=db.Test.Team.find_one(
+            user=db.Test.User.find_one(
                 {'_id':ObjectId(pk)}
             )
             
-            allPostId=dict(team)['teamData']['teamPost']
+            allPostId=dict(user)['match']
             print(allPostId)
             allpostLis=[]
             for postId in allPostId:
@@ -296,5 +298,5 @@ def getAllTeamPost(request,pk):
             message='something went wrong finding: ' + str(err.args[0])
     res.update({'statusCode':statusCode})
     res.update({'message':message})
-    res.update({'allTeamPosts': allpostLis})
+    res.update({'allUserMatches': allpostLis})
     return JsonResponse(res)
