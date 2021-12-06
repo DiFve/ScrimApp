@@ -199,7 +199,7 @@ def rejectReq(request,pk):
             postId=pk
             body=dict(QueryDict(request.body))
             teamId = body['teamId'][0]
-            post = db.Test.Post.find(
+            post = db.Test.Post.update(
                 {'_id':ObjectId(postId)},
                 {
                     '$pull':
@@ -210,6 +210,7 @@ def rejectReq(request,pk):
                     }
                 }
             )
+            print(post)
     except Exception as err:
          message='something went wrong while rejecting your request : ' + str(err.args[0])
     res.update({'statusCode':statusCode})
