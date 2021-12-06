@@ -15,13 +15,20 @@ urlpatterns = [
     path('getpost/<str:pk>',postRoute.getPostById,name='getPostById'),
     path('test-averagerank/<str:pk>',postRoute.getAvgRank,name='getAvgRank'),
     path('post/<str:pk>/accept-request',postRoute.acceptReq,name='acceptReq'),
-    path('get-team-post/<str:pk>',postRoute.getAllTeamPost,name='getAllTeamPost'),
+    path('get-match/<str:pk>',postRoute.getAllUserPost,name='getAllTeamPost'),
+    path('post/<str:pk>/reject-request',postRoute.rejectReq,name='rejectReq'),
     
     #teamRoute
     path('createteam',teamRoute.createTeam,name='createTeam'),
     path('getteam/<str:pk>',teamRoute.getTeam,name='getTeam'),
     path('addmember/<str:pk>',teamRoute.addMember,name='addMember'),
     path('removemember/<str:pk>',teamRoute.removeMember,name='removeMember'),
+    path('editteam/<str:pk>',teamRoute.editTeam,name='editTeam'),
+    path('getTeamImage/<str:pk>',teamRoute.getTeamImage,name='getTeamImage'),
+    path('setTeamImage',teamRoute.setTeamImage,name='setTeamImage'),
+
+
+
 
     #profileRoute
     path('createUser',profileRoute.creteProfile,name='creteProfile'),
