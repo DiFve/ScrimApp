@@ -266,7 +266,6 @@ def editTeam(request,pk):
                 {'_id':ObjectId(pk)},
                 {'$set':
                     {
-                        'teamData.teamName':body['teamName'][0],
                         'teamData.bio':body['bio'][0]
                     }
                 }
