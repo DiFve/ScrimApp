@@ -66,7 +66,7 @@ def getAllPost(request):
     try:
         if request.method == 'GET':
             allpost=db.Test.Post.find()
-            postAlgo.updatePassDatePost(db,allpost)
+            postAlgo.updatePassDatePost(db)
             allpostLis=[]
             for data in allpost:
                 print(data)

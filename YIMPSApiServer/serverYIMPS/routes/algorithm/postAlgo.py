@@ -149,13 +149,11 @@ def sortPostBy(method,postArr):
         return data
     
 def findAvgRank(members):
-    print(members)
     try:
         allrank=0
         for user in members:
             res=requests.get('http://34.124.169.53:8000/api/getUserInfoByID/{0}'.format(user['userid']))
             userrank=res.json()['userInfo']['rank']
-            print(userrank)
             if userrank == '':
                 return 'No information'
             allrank+=rank[userrank]
@@ -167,7 +165,8 @@ def findAvgRank(members):
     except Exception as err:
         print('some err in avg:' + err.args[0])
 
-def updatePassDatePost(db,allpost):
+def updatePassDatePost(db):
+    allpost=db.Test.Post.find()
     allpostLis=[]
     for data in allpost:
         _id=str(data['_id'])
@@ -175,6 +174,7 @@ def updatePassDatePost(db,allpost):
         allpostLis.append(data['postData'])
     sortedLis=sortPostBy('date',{'allPosts':allpostLis})
     allNotReadyMatch = []
+    overdueDate = []
     for match in sortedLis:
         if match['isReady']:
             continue
@@ -182,16 +182,15 @@ def updatePassDatePost(db,allpost):
     l=0
     r=len(allNotReadyMatch)
     while l<r:
-        mid = int((l+r)/2)+1
+        mid = int((l+r)/2)
         date = str(allNotReadyMatch[mid]['date']) + ' ' + str(allNotReadyMatch[mid]['time'])
         date = datetime.datetime.strptime(date, "%d/%m/%Y %H:%M")
-        print(date)
         if date < today:
-            l=mid
+            l=mid+1
         else:
-            r=mid-1
-    overdueDate = allNotReadyMatch[:mid]
-    print(overdueDate)
+            r=mid
+    if mid != 0:
+        overdueDate = allNotReadyMatch[:mid-1]
     for match in overdueDate:
         db.Test.Team.update(
             {'_id':ObjectId(match['createdby'])},
