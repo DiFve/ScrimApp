@@ -1,8 +1,10 @@
 from time import time
+from datetime import date, datetime
 from django.http import JsonResponse,QueryDict
 from django.http.response import HttpResponse
 from django.http.request import HttpRequest
 import requests
+from requests.sessions import TooManyRedirects
 from utils import get_db_handle
 from django.views.decorators.csrf import csrf_exempt
 from bson.objectid import ObjectId
@@ -106,6 +108,13 @@ class matchPriorityQueue:
             i += 1
         print()
 
+def countdown(today,nextday):
+    diff = nextday - today
+    if diff.days == 0:
+        return "today"
+    else:
+        return str(diff.days) + " day"
+
 def getNextFiveMatch(request,pk):
     res = {}
     message=''
@@ -116,11 +125,14 @@ def getNextFiveMatch(request,pk):
             matchQueue = matchPriorityQueue()
             allPost = requests.get('http://34.124.169.53:8000/api/get-match/{0}'.format(pk))
             allMatch = list(allPost.json()['allUserMatches'])
-            #print(allPost.json())
             for match in allMatch:
-                dateOfMatch = match['postData']['date']
-                timeOfMatch = match['postData']['time']
-                matchQueue.insert(match,dateOfMatch,timeOfMatch)
+                Detailmatch = match['postData']
+                dateOfMatch = Detailmatch['date']
+                timeOfMatch = Detailmatch['time']
+                nextMatchDate = list(map(int,dateOfMatch.split("/")))
+                nextday = datetime(nextMatchDate[2],nextMatchDate[1],nextMatchDate[0])
+                Detailmatch.update({'countdown':countdown(datetime.now(),nextday)})
+                matchQueue.insert(Detailmatch,dateOfMatch,timeOfMatch)
             i = 0 #indexOfMatch
             sizeOfMatch = matchQueue.size
             while i <= sizeOfMatch:
@@ -128,9 +140,6 @@ def getNextFiveMatch(request,pk):
                     break
                 listOfNextFiveMatch.append(matchQueue.extractNextMatch().obj)
                 i += 1
-            for i in listOfNextFiveMatch:
-                print(i)
-                print()
             message = 'successfully get 5 next match'
     except Exception as err:
         statuscode = 440
