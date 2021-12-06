@@ -114,8 +114,9 @@ def getNextFiveMatch(request,pk):
         if request.method == 'GET':
             listOfNextFiveMatch = []
             matchQueue = matchPriorityQueue()
-            allPost = requests.get('http://34.124.169.53:8000/api/get-team-post/{0}'.format(pk))
-            allMatch = list(allPost.json()['allTeamPosts'])
+            allPost = requests.get('http://34.124.169.53:8000/api/get-match/{0}'.format(pk))
+            allMatch = list(allPost.json()['allUserMatches'])
+            #print(allPost.json())
             for match in allMatch:
                 dateOfMatch = match['postData']['date']
                 timeOfMatch = match['postData']['time']
@@ -138,3 +139,4 @@ def getNextFiveMatch(request,pk):
     res.update({'message':message})
     res.update({'nextFivePost':listOfNextFiveMatch})
     return JsonResponse(res)
+    
