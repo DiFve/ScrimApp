@@ -54,7 +54,7 @@ def createTeam(request):
             )
             message='successfully save'
 
-            idObj = db.Test.User.find_one(
+            idObj = db.Test.Team.find_one(
                 {
                     'teamData.teamName' : body['teamName'][0]
                 }
