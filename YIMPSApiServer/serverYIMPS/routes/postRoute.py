@@ -108,6 +108,8 @@ def reqToScrim(request,pk):
                 )
                 if body['teamId'][0] == reqPost[0]['postData']['createdby']:
                     raise Exception('Cannot request to your own post')
+                if body['teamId'][0] == '':
+                    raise Exception('Cannot request with no team')
                 reqToSent = {
                     'teamId': body['teamId'][0],
                 }
