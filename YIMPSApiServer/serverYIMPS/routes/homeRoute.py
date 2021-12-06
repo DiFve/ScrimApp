@@ -110,6 +110,8 @@ class matchPriorityQueue:
 
 def countdown(today,nextday):
     diff = nextday - today
+    if today > nextday:
+        return False
     if diff.days == 0:
         return "today"
     else:
@@ -131,8 +133,12 @@ def getNextFiveMatch(request,pk):
                 timeOfMatch = Detailmatch['time']
                 nextMatchDate = list(map(int,dateOfMatch.split("/")))
                 nextday = datetime(nextMatchDate[2],nextMatchDate[1],nextMatchDate[0])
-                Detailmatch.update({'countdown':countdown(datetime.now(),nextday)})
-                matchQueue.insert(Detailmatch,dateOfMatch,timeOfMatch)
+                cd = countdown(datetime.now(),nextday)
+                enemyTeamDetail =  requests.get("http://34.124.169.53:8000/api/getteam/{0}".format(Detailmatch['opponent']))
+                if cd != False:
+                    Detailmatch.update({'countdown':cd})
+                    Detailmatch.update({'enemyTeamName':enemyTeamDetail.json()['reqTeam']['teamData']['teamName']})
+                    matchQueue.insert(Detailmatch,dateOfMatch,timeOfMatch)
             i = 0 #indexOfMatch
             sizeOfMatch = matchQueue.size
             while i <= sizeOfMatch:
