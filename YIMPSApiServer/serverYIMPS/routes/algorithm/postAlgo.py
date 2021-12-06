@@ -1,6 +1,10 @@
+from bson.objectid import ObjectId
 import requests
 from requests.api import post
 import math
+import datetime
+
+today = datetime.datetime.now()
 rank={
               'Iron1': 0,
               'Iron2': 1,
@@ -136,16 +140,12 @@ def sortPostBy(method,postArr):
     if method == 'rank':
         testdic = postArr
         data=testdic['allPosts']
-        print(data)
         mergeSortRank(data)
-        print(data) 
         return data
     elif method == 'date':
         testdic = postArr
         data=testdic['allPosts']
-        print(data)
         mergeSortDate(data)
-        print(data)
         return data
     
 def findAvgRank(members):
@@ -155,6 +155,7 @@ def findAvgRank(members):
         for user in members:
             res=requests.get('http://34.124.169.53:8000/api/getUserInfoByID/{0}'.format(user['userid']))
             userrank=res.json()['userInfo']['rank']
+            print(userrank)
             if userrank == '':
                 return 'No information'
             allrank+=rank[userrank]
@@ -165,3 +166,42 @@ def findAvgRank(members):
                 return i
     except Exception as err:
         print('some err in avg:' + err.args[0])
+
+def updatePassDatePost(db,allpost):
+    allpostLis=[]
+    for data in allpost:
+        _id=str(data['_id'])
+        data['postData'].update({'id':_id})
+        allpostLis.append(data['postData'])
+    sortedLis=sortPostBy('date',{'allPosts':allpostLis})
+    allNotReadyMatch = []
+    for match in sortedLis:
+        if match['isReady']:
+            continue
+        allNotReadyMatch.append(match)
+    l=0
+    r=len(allNotReadyMatch)
+    while l<r:
+        mid = int((l+r)/2)+1
+        date = str(allNotReadyMatch[mid]['date']) + ' ' + str(allNotReadyMatch[mid]['time'])
+        date = datetime.datetime.strptime(date, "%d/%m/%Y %H:%M")
+        print(date)
+        if date < today:
+            l=mid
+        else:
+            r=mid-1
+    overdueDate = allNotReadyMatch[:mid]
+    print(overdueDate)
+    for match in overdueDate:
+        db.Test.Team.update(
+            {'_id':ObjectId(match['createdby'])},
+            {
+                '$pull':
+                {
+                    'teamData.teamPost': match['id']
+                }
+            }
+        )
+        db.Test.Post.remove(
+            {'_id':ObjectId(match['id'])}
+        )
