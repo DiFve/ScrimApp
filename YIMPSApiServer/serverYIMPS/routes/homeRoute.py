@@ -113,7 +113,7 @@ def countdown(today,nextday):
     if diff.days == 0:
         return "today"
     else:
-        return str(diff.days) + "day"
+        return str(diff.days) + " day"
 
 def getNextFiveMatch(request,pk):
     res = {}
