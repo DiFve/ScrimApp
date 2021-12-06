@@ -117,7 +117,7 @@ def reqToScrim(request,pk):
                     raise Exception('Cannot request with no team')
                 for req in list(reqPost['req']):
                     if req['teamId']==body['teamId'][0]:
-                        raise Exception('Alreay requested')
+                        raise Exception('you already requested this post')
                 reqToSent = {
                     'teamId': body['teamId'][0],
                 }
