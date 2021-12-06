@@ -28,6 +28,7 @@ def createPost(request):
                 'createdby': body['createdby'][0],
                 'opponent': '',
                 'teamName':body['teamName'][0],
+                'isReady':False,
             }
             resformBack = requests.get('http://34.124.169.53:8000/api/getteam/{0}'.format(post['createdby']))
             teamMember=resformBack.json()['reqTeam']['teamMember']
@@ -159,7 +160,8 @@ def acceptReq(request,pk):
                     '$set':
                     {
                         'postData.opponent':teamId,
-                        'req':[]
+                        'req':[],
+                        'postData.isReady':True
                     }
                 }
             )
