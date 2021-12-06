@@ -39,7 +39,7 @@ def createTeam(request):
                 'teamRank': body['teamRank'][0], #rank of user who created the post
                 'teamLead' : body['teamLead'][0], #id of user who created the post
                 'teamPost' : [],
-                'bio' : 'show experiance of your team skill WOOOOOHOOOOO',
+                'bio' : body['bio'][0],
             }
             result=db.Test.Team.insert_one(
                 {'teamData': team,
