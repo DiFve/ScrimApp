@@ -113,7 +113,7 @@ def countdown(today,nextday):
     if diff.days == 0:
         return "today"
     else:
-        return str(diff.days) + "day"
+        return str(diff.days) + " day"
 
 def getNextFiveMatch(request,pk):
     res = {}
@@ -140,9 +140,6 @@ def getNextFiveMatch(request,pk):
                     break
                 listOfNextFiveMatch.append(matchQueue.extractNextMatch().obj)
                 i += 1
-            for i in listOfNextFiveMatch:
-                print(i)
-                print()
             message = 'successfully get 5 next match'
     except Exception as err:
         statuscode = 440
