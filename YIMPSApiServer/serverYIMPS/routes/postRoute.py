@@ -62,9 +62,11 @@ def getAllPost(request):
     res={}
     message=''
     statusCode = 200
+    allpostLis=[]
     try:
         if request.method == 'GET':
             allpost=db.Test.Post.find()
+            postAlgo.updatePassDatePost(db,allpost)
             allpostLis=[]
             for data in allpost:
                 print(data)
@@ -86,12 +88,10 @@ def getAllPost(request):
             for data in allpost:
                 _id=str(data['_id'])
                 data['postData'].update({'id':_id})
-                print(data['req'])
                 data['postData'].update({'req':data['req']})
                 allpostLis.append(data['postData'])
                 
             message='successfully finding'
-            print(res)
     except Exception as err:
             statusCode = 440
             message='something went wrong finding: ' + str(err.args[0])
@@ -220,8 +220,6 @@ def rejectReq(request,pk):
     res.update({'statusCode':statusCode})
     res.update({'message':message})
     return JsonResponse(res)
-
-
 
 def getPostById(request,pk):
     res={}
