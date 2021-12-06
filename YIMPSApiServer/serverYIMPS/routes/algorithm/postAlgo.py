@@ -24,6 +24,8 @@ rank={
               'Immortal2' : 19,
               'Immortal3' : 20,
               'Radiant' : 21,
+              '':22,
+              'No information':23,
              }
 def mergeSortRank(myList):
     if len(myList) > 1:
