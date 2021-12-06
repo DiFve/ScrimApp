@@ -134,8 +134,10 @@ def getNextFiveMatch(request,pk):
                 nextMatchDate = list(map(int,dateOfMatch.split("/")))
                 nextday = datetime(nextMatchDate[2],nextMatchDate[1],nextMatchDate[0])
                 cd = countdown(datetime.now(),nextday)
+                enemyTeamDetail =  requests.get("http://34.124.169.53:8000/api/getteam/{0}".format(Detailmatch['opponent']))
                 if cd != False:
                     Detailmatch.update({'countdown':cd})
+                    Detailmatch.update({'enemyTeamName':enemyTeamDetail.json()['reqTeam']['teamData']['teamName']})
                     matchQueue.insert(Detailmatch,dateOfMatch,timeOfMatch)
             i = 0 #indexOfMatch
             sizeOfMatch = matchQueue.size
