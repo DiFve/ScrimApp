@@ -257,6 +257,7 @@ def getPostSort(request):
             for data in allpost:
                 _id=str(data['_id'])
                 data['postData'].update({'id':_id})
+                data['postData'].update({'req':data['req']})
                 allpostLis.append(data['postData'])
             sortedLis=postAlgo.sortPostBy(body['method'][0],{'allPosts':allpostLis})
             message='successfully finding'
